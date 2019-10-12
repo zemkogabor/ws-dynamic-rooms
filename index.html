@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Dynamic rooms
+	</title>
+</head>
+
+<body>
+<style>
+btn {
+	width:200px;
+}
+
+.room {
+	display: none;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+<script>
+	$(document).ready(function() {
+		let roomsSocket = io('http://localhost:3001/rooms');
+
+		roomsSocket.on('update', function (rooms) {
+			let tmp = '';
+			for (let room in rooms) {
+				tmp += room + '<br>';
+			}
+
+			$('.available-rooms .items').html(tmp);
+		});
+
+		$('#create').click( function() {
+			chatRoom('create', $('#username').val(), $('#room').val());
+		});
+
+		$('#join').click( function() {
+			chatRoom('join', $('#username').val(), $('#room').val());
+		});
+
+		function chatRoom(action, username, room) {
+			let chatSocket = io('http://localhost:3001/chat');
+   
+			chatSocket.on('connect', function() {
+				chatSocket.emit(action, username, room);
+
+				$('.connect').hide();
+				$('.room').show();
+			});
+
+			chatSocket.on('update', function (username, message) {
+				$('#conversation').append('<b>'+username + ':</b> ' + message + '<br>');
+			});
+
+			$('#datasend').click( function() {
+				let message = $('#data').val();
+				$('#data').val('');
+				chatSocket.emit('send', message);
+			});
+		}
+	});
+   </script>
+
+<h1>Dynamic rooms</h1>
+
+<div class="available-rooms">
+	<h2>
+		Available rooms
+	</h2>
+
+	<div class="items">
+
+	</div>
+</div>
+
+<div class="connect">
+		<h2>
+			Connect
+		</h2>
+
+		<input id="username">
+		<input id="room">
+		<input type="button" id="create" value="Create room">
+		<input type="button" id="join" value="Join room">
+</div>
+
+<div class="room">
+	<h2>
+		Room
+	</h2>
+
+	<div id="conversation"></div>
+	<input id="data">
+	<input type="button" id="datasend" value="send">
+</div>
+
+</body>
+</html> 

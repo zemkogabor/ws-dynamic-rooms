@@ -1,0 +1,16 @@
+{
+  "name": "dynamic-rooms",
+  "description": "Socket.io dynamic rooms example.",
+  "version": "0.0.1",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "",
+    "socket.io": ""
+  },
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
